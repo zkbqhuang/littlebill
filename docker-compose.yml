@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_USER: littlebill
+      POSTGRES_DB: littlebill
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - littlebill
+    ports:
+      - 5432:5432
+
+  littlebill:
+    image: littlebill
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PSQL_USERNAME: littlebill
+      PSQL_PASSWORD: pgpass
+      PSQL_HOSTNAME: db
+      PSQL_DBNAME: littlebill
+    networks:
+      - littlebill
+    ports:
+      - 8080:8080
+
+networks:
+  littlebill:
+
+volumes:
+  db-data:
